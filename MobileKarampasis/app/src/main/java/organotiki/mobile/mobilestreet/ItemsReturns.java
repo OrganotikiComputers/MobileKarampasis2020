@@ -307,7 +307,7 @@ public class ItemsReturns extends AppCompatActivity implements View.OnClickListe
                             @Override
                             public void execute(Realm realm) {
 //                                InvoiceLine il = new InvoiceLine(line.getID(), line.getMyInvoice(),  line.getMyItem(), line.getMyInvoiceType(), line.getPrice(), line.getQuantity(),  line.getNotes(), line.getLastUpdate(),line.getLastCompany(), line.getWrhID(), line.getBraID(),line.getTypeCode(), line.getOverdue());
-                                InvoiceLine il = new InvoiceLine(line.getID(), line.getMyInvoice(), line.getMyItem(), line.getWPrice(), line.getPrice(), line.getQuantity(), line.getNotes(), line.getLastDate(), line.getLastCompany(), line.getLastQuantity(), line.getWrhID(), line.getBraID(), line.getTypeCode(), line.getDosCode(), line.getDocNumber(), line.getOverdue(), line.isEY(), line.isGuarantee(), line.isFromCustomer(), line.getTRNID(), line.getManufacturer(), line.getModel(), line.getYear1(), line.getEngineCode(), line.getYear2(),line.getKMTraveled(), line.getReturnCause(), line.getObservations(),line.getDocID(), line.getDocValue(),line.getChargePapi(), line.isExtraCharge(),line.getExtraChargeValue(),line.getExtraChargeLimit());
+                                InvoiceLine il = new InvoiceLine(line.getID(), line.getMyInvoice(), line.getMyItem(), line.getWPrice(), line.getPrice(), line.getQuantity(), line.getNotes(), line.getLastDate(), line.getLastCompany(), line.getLastQuantity(), line.getWrhID(), line.getBraID(), line.getTypeCode(), line.getDosCode(), line.getDocNumber(), line.getOverdue(), line.isEY(), line.isGuarantee(), line.isFromCustomer(), line.getTRNID(), line.getManufacturer(), line.getModel(), line.getYear1(), line.getEngineCode(), line.getYear2(),line.getKMTraveled(), line.getReturnCause(), line.getObservations(),line.getDocID(), line.getDocValue(),line.getChargePapi(), line.isExtraCharge(),line.getExtraChargeValue(),line.getExtraChargeLimit(),line.getDiscountReturnPercent(),line.isAllowed(),line.getMessageAllowed());
                                 Log.d("asdfg", String.valueOf(il));
                                 realm.copyToRealmOrUpdate(il);
                             }
@@ -475,14 +475,14 @@ public class ItemsReturns extends AppCompatActivity implements View.OnClickListe
                 if (checkIfExists(i.getID(), gVar.getMyInvoice().getID())) {
                     lines.addAll(realm.where(InvoiceLine.class).equalTo("myItem.ID", i.getID()).equalTo("myInvoice.ID", gVar.getMyInvoice().getID()).findAll());
                 } else {
-                    InvoiceLine myLine = new InvoiceLine(UUID.randomUUID().toString(), gVar.getMyInvoice(), i, 0.0, i.getPrice() == null ? 0.0 : i.getPrice(), 0.0, "", "", null, 0.0, null, null, null, null, null, 0, true, false, false, "", "", "", null, "", null, null, "", "",null,0.0, 0.0,false,0.0, 0.0);
+                    InvoiceLine myLine = new InvoiceLine(UUID.randomUUID().toString(), gVar.getMyInvoice(), i, 0.0, i.getPrice() == null ? 0.0 : i.getPrice(), 0.0, "", "", null, 0.0, null, null, null, null, null, 0, true, false, false, "", "", "", null, "", null, null, "", "",null,0.0, 0.0,false,0.0, 0.0,0.0,false,"");
                     lines.add(myLine);
                 }
             }
 
             for (InvoiceLine line : lines) {
 
-                lineSimple.add(new InvoiceLineSimple(line.getID(), line.getMyInvoice(), line.getMyItem(), line.getWPrice(), line.getPrice(), line.getQuantity(), line.getNotes(), line.getLastDate(), line.getLastCompany(), line.getLastQuantity(), line.getWrhID(), line.getBraID(), line.getTypeCode(), line.getDosCode(), line.getDocNumber(), line.getOverdue(), line.isEY(), line.isGuarantee(), line.isFromCustomer(), line.getTRNID(), line.getManufacturer(), line.getModel(), line.getYear1(), line.getEngineCode(), line.getYear2(),line.getKMTraveled(), line.getReturnCause(), line.getObservations(),line.getDocID(), line.getDocValue(),line.getChargePapi(), line.isExtraCharge(),line.getExtraChargeValue(),line.getExtraChargeLimit()));
+                lineSimple.add(new InvoiceLineSimple(line.getID(), line.getMyInvoice(), line.getMyItem(), line.getWPrice(), line.getPrice(), line.getQuantity(), line.getNotes(), line.getLastDate(), line.getLastCompany(), line.getLastQuantity(), line.getWrhID(), line.getBraID(), line.getTypeCode(), line.getDosCode(), line.getDocNumber(), line.getOverdue(), line.isEY(), line.isGuarantee(), line.isFromCustomer(), line.getTRNID(), line.getManufacturer(), line.getModel(), line.getYear1(), line.getEngineCode(), line.getYear2(),line.getKMTraveled(), line.getReturnCause(), line.getObservations(),line.getDocID(), line.getDocValue(),line.getChargePapi(), line.isExtraCharge(),line.getExtraChargeValue(),line.getExtraChargeLimit(),line.getDiscountReturnPercent(),line.isAllowed(),line.getMessageAllowed()));
             }
             mAdapter = new ListViewReturnsItemsAdapter(this, lineSimple);
             listView.setAdapter(mAdapter);

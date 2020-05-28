@@ -14,7 +14,7 @@ import io.realm.annotations.PrimaryKey;
 public class BrowserCustomer extends RealmObject {
 
     private User myUser;
-	//@PrimaryKey
+	@PrimaryKey
     private String CustomerCode;
     private String CustomerName;
     private Double TotalBalance;

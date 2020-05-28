@@ -120,15 +120,15 @@
         android:layout_width="5dp"
         android:layout_height="match_parent"
         android:background="#303030" />
-    <TextView 
-		android:textSize="14sp" 
+    <TextView
+		android:textSize="14sp"
 		android:textColor="@android:color/white"
-		android:gravity="right|center_vertical|center_horizontal|center|end" 
-		android:layout_gravity="center_vertical" 
-		android:id="@+id/managementCost" 
-		android:layout_width="75dp" 
-		android:layout_height="50dp" 
-		android:selectAllOnFocus="true" 
+		android:gravity="right|center_vertical|center_horizontal|center|end"
+		android:layout_gravity="center_vertical"
+		android:id="@+id/managementCost"
+		android:layout_width="75dp"
+		android:layout_height="50dp"
+		android:selectAllOnFocus="true"
 		android:layout_weight="10"/>
 
 	<TextView

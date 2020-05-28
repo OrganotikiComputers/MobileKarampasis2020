@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
@@ -111,6 +112,21 @@
                 android:gravity="center"
                 android:singleLine="true"
                 android:text="@string/quantity"
+                android:textColor="@color/colorAccent" />
+
+            <TextView
+                android:layout_width="5dp"
+                android:layout_height="match_parent"
+                android:background="#000" />
+
+            <TextView
+                android:id="@+id/column_header11"
+                android:layout_width="75dp"
+                android:layout_height="match_parent"
+                android:layout_weight="10"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/managementCost"
                 android:textColor="@color/colorAccent" />
 
             <TextView

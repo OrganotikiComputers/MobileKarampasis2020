@@ -53,7 +53,7 @@ import organotiki.mobile.mobilestreet.objects.InvoiceLineSimple;
 import organotiki.mobile.mobilestreet.objects.Item;
 import organotiki.mobile.mobilestreet.objects.OnlineReportType;
 import organotiki.mobile.mobilestreet.objects.ReturnBalance;
-
+import organotiki.mobile.mobilestreet.objects.Setting;
 import static java.lang.Math.abs;
 
 /**
@@ -134,13 +134,13 @@ public class VolleyRequests {
                                 object.put("Message", "H συσκευή είναι έτοιμη για χρήση.");
                                 comm.respondVolleyRequestFinished(0, object);
                                 if (mContext instanceof Sync) {
-                                    sendVolleyRequest("SenService/GetMobBank", "");
+                                    sendVolleyRequest("SenService/GetSENSetting", "");
                                 }
                             } else {
                                 object.put("Message", "Βρέθηκε νεότερη έκδοση της εφαρμογής.\nΠαρακαλώ εγκαταστήστε την όσο το δυνατόν συντομότερο.");
                                 comm.respondVolleyRequestFinished(0, object);
                                 if (mContext instanceof Sync) {
-                                    sendVolleyRequest("SenService/GetMobBank", "");
+                                    sendVolleyRequest("SenService/GetSENSetting", "");
                                 }
                             }
                         } else {
@@ -308,7 +308,26 @@ public class VolleyRequests {
 //                                        getImages();
                                         sendVolleyRequest("SenService/GetMobCustomer", "0");
                                     }
-                                }
+                                }else if (request.contains("GetSENSetting")) {
+                            final JSONArray jsonArray5 = response.getJSONArray("GetSettingsResult");
+                            Log.d("asdfg", String.valueOf(jsonArray5));
+                            if (jsonArray5.length() > 0) {
+                                VolleyRequests.this.realm.executeTransaction(new Realm.Transaction() {
+                                    public void execute(Realm realm) {
+                                        try {
+                                            realm.createOrUpdateAllFromJson(Setting.class, jsonArray5);
+                                        } catch (Exception e) {
+                                            Log.e("asdfg", e.getMessage(), e);
+                                        }
+                                    }
+                                });
+                                JSONObject jsonObject10 = new JSONObject();
+                                jsonObject10.put("Message", "Ο συγχρονισμός των ρυθμίσεων ολοκληρώθηκε.");
+                                VolleyRequests.this.comm.respondVolleyRequestFinished(0, jsonObject10);
+                            }
+                            VolleyRequests.this.sendVolleyRequest("SenService/GetMobBank", "");
+                            Log.d("asdfg", "number of Settings: " + VolleyRequests.this.realm.where(Setting.class).count());
+                        } 
                                 //region Unused synchronization requests
                                 /*else if (request.contains("GetSyncUser")) {
                                     final JSONArray jsonArray = response.getJSONArray("GetSyncUserResult");
@@ -1029,7 +1048,7 @@ public class VolleyRequests {
                     joSync.put("C020", gVar.getMyUser().getCurrency020());
                     joSync.put("C010", gVar.getMyUser().getCurrency010());
                     joSync.put("C005", gVar.getMyUser().getCurrency005());
-                    joSync.put("Deposits", gVar.getMyUser().getDeposit());
+                    joSync.put("Deposit", gVar.getMyUser().getDeposit());
 					joSync.put("Deposits", jSONArray3);
                     joSync.put("CCheckValue", gVar.getMyUser().getCCheckValue());
                     joSync.put("CCheckCount", gVar.getMyUser().getCCheckCount());
@@ -1057,7 +1076,8 @@ public class VolleyRequests {
                                         JSONObject jsonObject = new JSONObject();
                                         jsonObject.put("Message", "Το E-mail δεν στάλθηκε. Προσπαθήστε ξανά.");
                                         comm.respondVolleyRequestFinished(1, jsonObject);
-                                    } else {
+                                        return;
+                                    }
                                         realm.executeTransaction(new Realm.Transaction() {
                                             @Override
                                             public void execute(Realm realm) {
@@ -1089,7 +1109,7 @@ public class VolleyRequests {
                                         jsonObject.put("Message", "To E-mail στάλθηκε επιτυχώς.");
                                         comm.respondVolleyRequestFinished(0, jsonObject);
                                         sendInvoicesToSen();
-                                    }
+
                                 } catch (Exception e) {
                                     Log.e("asdfg", e.getMessage(), e);
                                 }
@@ -1125,23 +1145,43 @@ public class VolleyRequests {
     }
 
     private Double CalculateCurrencyTotal() {
-        Double sub500 = (double) 500 * gVar.getMyUser().getCurrency500();
-        Double sub200 = (double) 200 * gVar.getMyUser().getCurrency200();
-        Double sub100 = (double) 100 * gVar.getMyUser().getCurrency100();
-        Double sub50 = (double) 50 * gVar.getMyUser().getCurrency50();
-        Double sub20 = (double) 20 * gVar.getMyUser().getCurrency20();
-        Double sub10 = (double) 10 * gVar.getMyUser().getCurrency10();
-        Double sub5 = (double) 5 * gVar.getMyUser().getCurrency5();
-        Double sub2 = (double) 2 * gVar.getMyUser().getCurrency2();
-        Double sub1 = (double) (gVar.getMyUser().getCurrency1());
-        Double sub050 = 0.50 * gVar.getMyUser().getCurrency050();
-        Double sub020 = 0.20 * gVar.getMyUser().getCurrency020();
-        Double sub010 = 0.10 * gVar.getMyUser().getCurrency010();
-        Double sub005 = 0.05 * gVar.getMyUser().getCurrency005();
-        Double checkValue = gVar.getMyUser().getCCheckValue();
-        Double deposit = gVar.getMyUser().getDeposit();
-        Double total = sub500 + sub200 + sub100 + sub50 + sub20 + sub10 + sub5 + sub2 + sub1 + sub050 + sub020 + sub010 + sub005 + checkValue+deposit;
-        return total;
+        double currency500 = (double) this.gVar.getMyUser().getCurrency500();
+        Double.isNaN(currency500);
+        Double sub500 = Double.valueOf(currency500 * 500.0d);
+        double currency200 = (double) this.gVar.getMyUser().getCurrency200();
+        Double.isNaN(currency200);
+        Double sub200 = Double.valueOf(currency200 * 200.0d);
+        double currency100 = (double) this.gVar.getMyUser().getCurrency100();
+        Double.isNaN(currency100);
+        Double sub100 = Double.valueOf(currency100 * 100.0d);
+        double currency50 = (double) this.gVar.getMyUser().getCurrency50();
+        Double.isNaN(currency50);
+        Double sub50 = Double.valueOf(currency50 * 50.0d);
+        double currency20 = (double) this.gVar.getMyUser().getCurrency20();
+        Double.isNaN(currency20);
+        Double sub20 = Double.valueOf(currency20 * 20.0d);
+        double currency10 = (double) this.gVar.getMyUser().getCurrency10();
+        Double.isNaN(currency10);
+        Double sub10 = Double.valueOf(currency10 * 10.0d);
+        double currency5 = (double) this.gVar.getMyUser().getCurrency5();
+        Double.isNaN(currency5);
+        Double sub5 = Double.valueOf(currency5 * 5.0d);
+        double currency2 = (double) this.gVar.getMyUser().getCurrency2();
+        Double.isNaN(currency2);
+        Double sub2 = Double.valueOf(currency2 * 2.0d);
+        Double sub1 = Double.valueOf((double) this.gVar.getMyUser().getCurrency1());
+        double currency050 = (double) this.gVar.getMyUser().getCurrency050();
+        Double.isNaN(currency050);
+        Double sub050 = Double.valueOf(currency050 * 0.5d);
+        double currency020 = (double) this.gVar.getMyUser().getCurrency020();
+        Double.isNaN(currency020);
+        Double sub020 = Double.valueOf(currency020 * 0.2d);
+        double currency010 = (double) this.gVar.getMyUser().getCurrency010();
+        Double.isNaN(currency010);
+        Double sub010 = Double.valueOf(currency010 * 0.1d);
+        double currency005 = (double) this.gVar.getMyUser().getCurrency005();
+        Double.isNaN(currency005);
+        return Double.valueOf(sub500.doubleValue() + sub200.doubleValue() + sub100.doubleValue() + sub50.doubleValue() + sub20.doubleValue() + sub10.doubleValue() + sub5.doubleValue() + sub2.doubleValue() + sub1.doubleValue() + sub050.doubleValue() + sub020.doubleValue() + sub010.doubleValue() + Double.valueOf(currency005 * 0.05d).doubleValue() + this.gVar.getMyUser().getCCheckValue().doubleValue() + Double.valueOf(this.gVar.getMyUser().getMyDebosits().sum("Value").doubleValue()).doubleValue());
     }
     //endregion
 
@@ -1436,6 +1476,7 @@ public class VolleyRequests {
                         il.put("IsExtraCharge", lines.get(i).isExtraCharge());
                         il.put("ExtraChargeValue", lines.get(i).getExtraChargeValue());
                         il.put("ExtraChargeLimit", lines.get(i).getExtraChargeLimit());
+                        il.put("SmartCost",lines.get(i).getManageCost());
 
                         if (lines.get(i).isGuarantee()) {
                             JSONObject guar = new JSONObject();
@@ -1993,6 +2034,16 @@ public class VolleyRequests {
 										line.setExtraCharge(json.getBoolean("IsExtraCharge"));
 										line.setExtraChargeValue(Double.valueOf(json.getDouble("ExtraChargeValue")));
 										line.setExtraChargeLimit(Double.valueOf(json.getDouble("ExtraChargeLimit")));
+										line.setDiscountReturnPercent(Double.valueOf(json.getDouble("DiscountReturnPercent")));
+										String allowed=json.getString("ReturnAllowed");
+                                        String[] separated = allowed.split("#");
+										if(separated[0].equals("0")){
+                                            line.setAllowed(false);
+                                        }
+										else{
+										    line.setAllowed(true);
+                                        }
+                                        line.setMessageAllowed(separated[1]);
                                     }
                                 } catch (Exception e) {
                                     Log.e("asdfg", e.getMessage(), e);

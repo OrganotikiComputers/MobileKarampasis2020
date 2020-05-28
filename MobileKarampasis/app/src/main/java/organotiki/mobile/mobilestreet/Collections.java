@@ -3,6 +3,7 @@ package organotiki.mobile.mobilestreet;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -650,15 +652,35 @@ public class Collections extends AppCompatActivity implements Communicator {
 
     }
 
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.collections_menu, menu);
+        return true;
+    }
+
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        return true;
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (gVar.getMyFInvoice().isFinal()) {
-            finish();
-        } else {
-            doExit();
+
+        switch (item.getItemId()) {
+            case R.id.customerReport:
+                try {
+                    Intent intent = new Intent(this, CustomerReport.class);
+                    if (this.gVar.getMyFInvoice().getMyCustomer() != null) {
+                        Bundle b = new Bundle();
+                        b.putString("CustomerID", this.gVar.getMyFInvoice().getMyCustomer().getID());
+                        b.putString("AddressID", this.gVar.getMyFInvoice().getMyAddress().getID());
+                        intent.putExtras(b);
+                    }
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.e("asdfg", e.getMessage(), e);
+                }
+                return false;
         }
-        return true;
-//        return super.onOptionsItemSelected(item);
+        return false;
     }
 
 

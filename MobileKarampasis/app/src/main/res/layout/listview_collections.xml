@@ -63,6 +63,8 @@
         android:inputType="number|numberDecimal"
         android:selectAllOnFocus="true"/>
 
+
+
     <TextView
         android:layout_width="5dp"
         android:layout_height="match_parent"/>

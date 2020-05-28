@@ -85,34 +85,35 @@ public class CityFilterFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     try {
-                        for (int i=0; i<myCityListAdapter.getCount();i++)
-                        if (cities.get(i).getShow()){
-                            if (realm.where(BrowserCityFilter.class).equalTo("City",cities.get(i).getName()).equalTo("myUser.ID", gVar.getMyUser().getID()).findFirst()==null){
-                                final int finalI = i;
-                                realm.executeTransaction(new Realm.Transaction() {
-                                    @Override
-                                    public void execute(Realm realm) {
-                                        try {
-                                            realm.copyToRealmOrUpdate(new BrowserCityFilter(UUID.randomUUID().toString(),gVar.getMyUser(),cities.get(finalI).Name));
-                                        } catch (Exception e) {
-                                            Log.e("asdfg", e.getMessage(), e);
+                        for (int i = 0; i < myCityListAdapter.getCount(); i++){
+                            if (cities.get(i).getShow()) {
+                                if (realm.where(BrowserCityFilter.class).equalTo("City", cities.get(i).getName()).equalTo("myUser.ID", gVar.getMyUser().getID()).findFirst() == null) {
+                                    final int finalI = i;
+                                    realm.executeTransaction(new Realm.Transaction() {
+                                        @Override
+                                        public void execute(Realm realm) {
+                                            try {
+                                                realm.copyToRealmOrUpdate(new BrowserCityFilter(UUID.randomUUID().toString(), gVar.getMyUser(), cities.get(finalI).Name));
+                                            } catch (Exception e) {
+                                                Log.e("asdfg", e.getMessage(), e);
+                                            }
                                         }
-                                    }
-                                });
-                            }
-                        }else{
-                            if (realm.where(BrowserCityFilter.class).equalTo("City",cities.get(i).getName()).equalTo("myUser.ID", gVar.getMyUser().getID()).findFirst()!=null){
-                                final int finalI1 = i;
-                                realm.executeTransaction(new Realm.Transaction() {
-                                    @Override
-                                    public void execute(Realm realm) {
-                                        try {
-                                            realm.where(BrowserCityFilter.class).equalTo("City",cities.get(finalI1).getName()).equalTo("myUser.ID", gVar.getMyUser().getID()).findFirst().deleteFromRealm();
-                                        } catch (Exception e) {
-                                            Log.e("asdfg", e.getMessage(), e);
+                                    });
+                                }
+                            } else {
+                                if (realm.where(BrowserCityFilter.class).equalTo("City", cities.get(i).getName()).equalTo("myUser.ID", gVar.getMyUser().getID()).findFirst() != null) {
+                                    final int finalI1 = i;
+                                    realm.executeTransaction(new Realm.Transaction() {
+                                        @Override
+                                        public void execute(Realm realm) {
+                                            try {
+                                                realm.where(BrowserCityFilter.class).equalTo("City", cities.get(finalI1).getName()).equalTo("myUser.ID", gVar.getMyUser().getID()).findFirst().deleteFromRealm();
+                                            } catch (Exception e) {
+                                                Log.e("asdfg", e.getMessage(), e);
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
                         }
                         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);

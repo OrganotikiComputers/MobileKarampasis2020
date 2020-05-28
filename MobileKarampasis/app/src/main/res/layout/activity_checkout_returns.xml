@@ -279,6 +279,19 @@
             android:layout_width="5dp"
             android:layout_height="match_parent"
             android:background="#000" />
+        <TextView
+            android:id="@+id/column_header11"
+            android:layout_width="75dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/managementCost"
+            android:textColor="@color/colorAccent" />
+        <TextView
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:background="#000" />
 
         <TextView
             android:id="@+id/column_header7"
@@ -317,19 +330,7 @@
             android:maxLines="1"
             android:text="@string/fromCustomer"
             android:textColor="@color/colorAccent" />
-		<TextView 
-			android:background="#000" 
-			android:layout_width="5dp" 
-			android:layout_height="match_parent"/>
-			
-		<TextView 
-			android:textColor="@color/colorAccent" 
-			android:gravity="center" 
-			android:id="@+id/column_header10" 
-			android:layout_width="75dp" 
-			android:layout_height="match_parent"
-			android:text="@string/fromCustomer" 
-			android:maxLines="1"/>
+
     </LinearLayout>
 
     <ListView

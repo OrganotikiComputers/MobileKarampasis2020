@@ -48,7 +48,13 @@ public class InvoiceLine extends RealmObject {
     private String DocID;
     private Double ExtraChargeLimit;
     private Double ExtraChargeValue;
-	
+	private Double DiscountReturnPercent;
+    private boolean isAllowed;
+
+
+
+    private String MessageAllowed;
+
     public InvoiceLine() {
     }
 
@@ -63,7 +69,7 @@ public class InvoiceLine extends RealmObject {
         Notes = notes;
     }
 
-    public InvoiceLine(String ID, Invoice myInvoice, Item myItem, Double wPrice, Double price, Double quantity, String notes, String lastDate, Company lastCompany,Double lastQuantity, String wrhID, String braID, String typeCode, String dosCode, String docNumber, int overdue, boolean isEY,boolean isGuarantee, boolean fromCustomer, String TRNID,  String manufacturer, String model, Integer year1, String engineCode, Integer year2, Long KMTraveled, String returnCause, String observations,String docID,double docValue, double ChargePapi,boolean isExtraCharge,double extraChargeValue,double extraChargeLimit) {
+    public InvoiceLine(String ID, Invoice myInvoice, Item myItem, Double wPrice, Double price, Double quantity, String notes, String lastDate, Company lastCompany,Double lastQuantity, String wrhID, String braID, String typeCode, String dosCode, String docNumber, int overdue, boolean isEY,boolean isGuarantee, boolean fromCustomer, String TRNID,  String manufacturer, String model, Integer year1, String engineCode, Integer year2, Long KMTraveled, String returnCause, String observations,String docID,double docValue, double ChargePapi,boolean isExtraCharge,double extraChargeValue,double extraChargeLimit,double discountReturnPercent,boolean isallowed,String messageallowed) {
         this.ID = ID;
         this.myInvoice = myInvoice;
         this.myItem = myItem;
@@ -99,8 +105,32 @@ public class InvoiceLine extends RealmObject {
 		this.ChargePapi=ChargePapi;
 		ExtraChargeLimit=extraChargeLimit;
 		ExtraChargeValue=extraChargeValue;
+		DiscountReturnPercent=discountReturnPercent;
+		isAllowed=isallowed;
+		MessageAllowed=messageallowed;
+    }
+    public String getMessageAllowed() {
+        return MessageAllowed;
     }
 
+    public void setMessageAllowed(String messageAllowed) {
+        MessageAllowed = messageAllowed;
+    }
+    public boolean isAllowed() {
+        return isAllowed;
+    }
+
+    public void setAllowed(boolean allowed) {
+        isAllowed = allowed;
+    }
+
+    public Double getDiscountReturnPercent() {
+        return DiscountReturnPercent;
+    }
+
+    public void setDiscountReturnPercent(Double discountReturnPercent) {
+        DiscountReturnPercent = discountReturnPercent;
+    }
     public String getID() {
         return ID;
     }
@@ -455,10 +485,29 @@ public class InvoiceLine extends RealmObject {
         ExtraChargeValue = extraChargeValue;
     }
     public Double getManageCost() {
-        return Double.valueOf(getMyInvoice().getManagementCostPercent() == null ? 0.0 : ((getQuantity().doubleValue() * getPrice().doubleValue()) * getMyInvoice().getManagementCostPercent().doubleValue()) / 100.0d);
+        if(Double.valueOf(getMyInvoice().getManagementCostPercent())== null||Double.valueOf(getMyInvoice().getManagementCostPercent())==0.0){
+            if(Double.valueOf(getDiscountReturnPercent())==null){
+                return 0.0;
+            }
+            else {
+                return ((getQuantity().doubleValue() * getPrice().doubleValue()) * getDiscountReturnPercent().doubleValue()) / 100.0d;
+            }
+        }
+        else{
+            return ((getQuantity().doubleValue() * getPrice().doubleValue()) * getMyInvoice().getManagementCostPercent().doubleValue()) / 100.0d;
+            }
     }
 
     public String getManageCostText() {
-        return getMyInvoice().getManagementCostPercent() == null ? "0" : new DecimalFormat("0.00").format(((getQuantity().doubleValue() * getPrice().doubleValue()) * getMyInvoice().getManagementCostPercent().doubleValue()) / 100.0d).replace(",", ".");
-    }
+        if(getMyInvoice().getManagementCostPercent() == null){
+            if(getDiscountReturnPercent()==null||Double.valueOf(getMyInvoice().getManagementCostPercent())==0.0){
+                return "0";
+            }
+            else{
+                return new DecimalFormat("0.00").format(((getQuantity().doubleValue() * getPrice().doubleValue()) * getDiscountReturnPercent().doubleValue()) / 100.0d).replace(",", ".");
+            }
+        }
+        else{
+            return new DecimalFormat("0.00").format(((getQuantity().doubleValue() * getPrice().doubleValue()) * getMyInvoice().getManagementCostPercent().doubleValue()) / 100.0d).replace(",", ".");
+        }    }
 }

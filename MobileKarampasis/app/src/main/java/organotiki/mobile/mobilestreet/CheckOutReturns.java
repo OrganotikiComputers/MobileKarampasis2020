@@ -510,6 +510,7 @@ public class CheckOutReturns extends AppCompatActivity implements Communicator {
             TextView Value;
             TextView LastDate;
             TextView LastCompany;
+            TextView ManagementCost;
             AppCompatCheckBox Guarantee;
             AppCompatCheckBox Script;
             int ref;
@@ -540,6 +541,7 @@ public class CheckOutReturns extends AppCompatActivity implements Communicator {
                     viewHolder.Image = (ImageView) convertView.findViewById(R.id.imageView_image);
                     viewHolder.Code = (TextView) convertView.findViewById(R.id.code);
                     viewHolder.Description = (TextView) convertView.findViewById(R.id.description);
+                    viewHolder.ManagementCost = (TextView) convertView.findViewById(R.id.managementCost);
                     viewHolder.LastQuantity = (TextView) convertView.findViewById(R.id.last_quantity);
                     viewHolder.Price = (TextView) convertView.findViewById(R.id.price);
                     viewHolder.Quantity = (TextView) convertView.findViewById(R.id.quantity);
@@ -577,6 +579,7 @@ public class CheckOutReturns extends AppCompatActivity implements Communicator {
                 viewHolder.Price.setText(invoiceLine.getPriceText());
                 viewHolder.Quantity.setText(invoiceLine.getQuantityText());
                 viewHolder.Value.setText(invoiceLine.getValueText());
+                viewHolder.ManagementCost.setText(invoiceLine.getManageCostText());
                 String lastdatetext = invoiceLine.getLastDate()+(invoiceLine.getOverdue()==1?" ΠΕΡΑΝ ΤΟΥ ΕΠΙΤΡΕΠΤΟΥ":"");
                 viewHolder.LastDate.setText(lastdatetext);
                 viewHolder.LastCompany.setText(invoiceLine.getLastCompany() == null ? "" : invoiceLine.getLastCompany().getDescription()+"-"+invoiceLine.getTypeCode()+"/"+invoiceLine.getDosCode()+"-"+invoiceLine.getDocNumber());
@@ -618,6 +621,7 @@ public class CheckOutReturns extends AppCompatActivity implements Communicator {
                 holder.LastQuantity.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
                 holder.Price.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
                 holder.Quantity.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
+                holder.ManagementCost.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
                 holder.Value.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
                 holder.LastDate.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
                 holder.LastCompany.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
@@ -630,6 +634,7 @@ public class CheckOutReturns extends AppCompatActivity implements Communicator {
                 holder.LastQuantity.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
                 holder.Price.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
                 holder.Quantity.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
+                holder.ManagementCost.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
                 holder.Value.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
                 holder.LastDate.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
                 holder.LastCompany.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));

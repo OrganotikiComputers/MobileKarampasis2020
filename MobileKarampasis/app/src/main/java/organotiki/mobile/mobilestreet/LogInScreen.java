@@ -283,7 +283,7 @@ public class LogInScreen extends AppCompatActivity implements View.OnClickListen
                 break;
             case 1:
                 try {
-					progressBar.setVisibility(4);
+					progressBar.setVisibility(View.INVISIBLE);
                     String message = jsonArray.getString("Message");
                     Toast.makeText(LogInScreen.this, message,Toast.LENGTH_LONG).show();
                     request.LogIn(LogInScreen.this, username.getText().toString(), password.getText().toString());
@@ -293,7 +293,7 @@ public class LogInScreen extends AppCompatActivity implements View.OnClickListen
                 break;
             case 2:
                 try {
-					progressBar.setVisibility(4);
+					progressBar.setVisibility(View.INVISIBLE);
                     if (jsonArray.isNull("LogInResult")) {
                         Toast.makeText(LogInScreen.this, "Λανθασμένος συνδιασμός στοιχείων.\nΠαρακαλώ προσπαθήστε ξανά.", Toast.LENGTH_LONG).show();
                     } else {

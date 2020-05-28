@@ -24,7 +24,11 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
@@ -193,7 +197,42 @@ public class Returns extends AppCompatActivity implements Communicator {
                         message += l == 0 ? message.equals("") ? "Δεν επιλέξατε κανένα είδος." : "\nΔεν επιλέξατε κανένα είδος." : "";
 
 
-                        message += realm.where(InvoiceLine.class).equalTo("myInvoice.ID", gVar.getMyInvoice().getID()).beginGroup().equalTo("LastDate", "ΔΕΝ ΒΡΕΘΗΚΕ").or().equalTo("LastDate", "").or().equalTo("Overdue",1).endGroup().count() > 0 ? message.equals("") ? "Για ένα ή παραπάνω αντικείμενα δεν βρέθηκαν πρόσφατες πωλήσεις." : "\nΓια ένα ή παραπάνω αντικείμενα δεν βρέθηκαν πρόσφατες πωλήσεις." : "";
+                        //message += realm.where(InvoiceLine.class).equalTo("myInvoice.ID", gVar.getMyInvoice().getID()).beginGroup().equalTo("LastDate", "ΔΕΝ ΒΡΕΘΗΚΕ").or().equalTo("LastDate", "").or().equalTo("Overdue",1).endGroup().count() > 0 ? message.equals("") ? "Για ένα ή παραπάνω αντικείμενα δεν βρέθηκαν πρόσφατες πωλήσεις." : "\nΓια ένα ή παραπάνω αντικείμενα δεν βρέθηκαν πρόσφατες πωλήσεις." : "";
+                        Setting GuaranteeLimit = (Setting) this.realm.where(Setting.class).equalTo("Code", "Garantylimit").equalTo("System", "6").findFirst();
+                        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                        Calendar c = Calendar.getInstance();
+
+                        for(int i=0;i<lines.size();i++){
+                            if(!lines.get(i).isAllowed()){
+                                message+="\n"+lines.get(i).getMessageAllowed();
+                            }
+                            if(lines.get(i).getLastDate()==""||lines.get(i).getLastDate()=="ΔΕΝ ΒΡΕΘΗΚΕ"||lines.get(i).getOverdue()==1){
+                                if(lines.get(i).getOverdue()==1){
+                                    if(!lines.get(i).isGuarantee()){
+                                        message+="\n Δεν βρέθηκαν πρόσφατες πωλήσεις για το αντικείμενο:"+lines.get(i).getMyItem().getCode();
+                                    }else{
+                                        Date myDate;
+                                        try {
+                                            myDate = df.parse(lines.get(i).getLastDate());
+                                            c.add(Calendar.MONTH, -Integer.parseInt(GuaranteeLimit.getValue()));
+                                            if(myDate.before(c.getTime())){
+                                                message+="\n Δεν επιτρέπεται η εγγύηση για το αντικείμενο:"+lines.get(i).getMyItem().getCode();
+                                            }
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                }
+                                else{
+                                    message+="\n Δεν βρέθηκαν πρόσφατες πωλήσεις για το αντικείμενο:"+lines.get(i).getMyItem().getCode();
+                                }
+
+
+                            }
+                        }
+
+
                         if (message.equals("")) {
                             intent = new Intent(Returns.this, CheckOutReturns.class);
                             startActivity(intent);
@@ -407,7 +446,7 @@ public class Returns extends AppCompatActivity implements Communicator {
                         realm.executeTransaction(new Realm.Transaction() {
                             @Override
                             public void execute(Realm realm) {
-                                realm.copyToRealmOrUpdate(new InvoiceLine(line.getID(), line.getMyInvoice(), line.getMyItem(), line.getWPrice(), line.getPrice(), line.getQuantity(), line.getNotes(), line.getLastDate(), line.getLastCompany(), line.getLastQuantity(), line.getWrhID(), line.getBraID(), line.getTypeCode(), line.getDosCode(), line.getDocNumber(), line.getOverdue(), line.isEY(), line.isGuarantee(), line.isFromCustomer(), line.getTRNID(), line.getManufacturer(), line.getModel(), line.getYear1(), line.getEngineCode(), line.getYear2(),line.getKMTraveled(), line.getReturnCause(), line.getObservations(),line.getDocID(), line.getDocValue(), line.getChargePapi(), line.isExtraCharge(), line.getExtraChargeValue(), line.getExtraChargeLimit()));
+                                realm.copyToRealmOrUpdate(new InvoiceLine(line.getID(), line.getMyInvoice(), line.getMyItem(), line.getWPrice(), line.getPrice(), line.getQuantity(), line.getNotes(), line.getLastDate(), line.getLastCompany(), line.getLastQuantity(), line.getWrhID(), line.getBraID(), line.getTypeCode(), line.getDosCode(), line.getDocNumber(), line.getOverdue(), line.isEY(), line.isGuarantee(), line.isFromCustomer(), line.getTRNID(), line.getManufacturer(), line.getModel(), line.getYear1(), line.getEngineCode(), line.getYear2(),line.getKMTraveled(), line.getReturnCause(), line.getObservations(),line.getDocID(), line.getDocValue(), line.getChargePapi(), line.isExtraCharge(), line.getExtraChargeValue(), line.getExtraChargeLimit(),line.getDiscountReturnPercent(),line.isAllowed(),line.getMessageAllowed()));
                             }
                         });
                     } else {
@@ -465,7 +504,7 @@ public class Returns extends AppCompatActivity implements Communicator {
             lines.addAll(realm.where(InvoiceLine.class).equalTo("myInvoice.ID", gVar.getMyInvoice().getID()).findAll());
             Log.w("asdfg", "number of lines: " + String.valueOf(lines.size()));
             for (InvoiceLine line : lines) {
-                lineSimple.add(new InvoiceLineSimple(line.getID(), line.getMyInvoice(), line.getMyItem(), line.getWPrice(), line.getPrice(), line.getQuantity(), line.getNotes(), line.getLastDate(), line.getLastCompany(), line.getLastQuantity(), line.getWrhID(), line.getBraID(), line.getTypeCode(), line.getDosCode(), line.getDocNumber(), line.getOverdue(), line.isEY(), line.isGuarantee(), line.isFromCustomer(), line.getTRNID(), line.getManufacturer(), line.getModel(), line.getYear1(), line.getEngineCode(), line.getYear2(),line.getKMTraveled(), line.getReturnCause(), line.getObservations(), line.getDocID(), line.getDocValue(), line.getChargePapi(), line.isExtraCharge(), line.getExtraChargeValue(), line.getExtraChargeLimit()));
+                lineSimple.add(new InvoiceLineSimple(line.getID(), line.getMyInvoice(), line.getMyItem(), line.getWPrice(), line.getPrice(), line.getQuantity(), line.getNotes(), line.getLastDate(), line.getLastCompany(), line.getLastQuantity(), line.getWrhID(), line.getBraID(), line.getTypeCode(), line.getDosCode(), line.getDocNumber(), line.getOverdue(), line.isEY(), line.isGuarantee(), line.isFromCustomer(), line.getTRNID(), line.getManufacturer(), line.getModel(), line.getYear1(), line.getEngineCode(), line.getYear2(),line.getKMTraveled(), line.getReturnCause(), line.getObservations(), line.getDocID(), line.getDocValue(), line.getChargePapi(), line.isExtraCharge(), line.getExtraChargeValue(), line.getExtraChargeLimit(),line.getDiscountReturnPercent(),line.isAllowed(),line.getMessageAllowed()));
             }
 
             mAdapter = new ListViewReturnsItemsAdapter(this, lineSimple);

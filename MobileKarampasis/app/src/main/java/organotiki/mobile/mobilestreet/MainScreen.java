@@ -404,7 +404,7 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
 
     @Override
     public void respondDate(Integer position, int year, int month, int day) {
-
+        this.currencyCalculatorFragment.depositsFragment.respondDate(position, year, month, day);
     }
 
     @Override

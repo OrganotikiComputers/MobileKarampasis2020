@@ -1,6 +1,7 @@
 package organotiki.mobile.mobilestreet;
 
 import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,6 +31,7 @@ public class CurrencyCalculatorFragment extends DialogFragment {
 
     ImageView imvCheck;
     Button close;
+    DepositsFragment depositsFragment;
     TextView txvExpensesTotalTitle, txvExpensesTotal, txvCashTotalTitle, txvCashTotal, txvDifferenceTitle, txvDifference, txvFromChecks, txvDeposit, txvCheckNum;
     EditText edt500, edt200, edt100, edt50, edt20, edt10, edt5, edt2, edt1, edt050, edt020, edt010, edt005, edtCChecksValue , edtDeposit, edtCChecksCount;
     Realm realm;
@@ -48,14 +50,14 @@ public class CurrencyCalculatorFragment extends DialogFragment {
 
             realm = Realm.getDefaultInstance();
             gVar = realm.where(GlobalVar.class).findFirst();
-
+            edtDeposit = (EditText) view.findViewById(R.id.editText_deposit);
             txvExpensesTotalTitle = view.findViewById(R.id.textView_currency_total_title);
             txvExpensesTotalTitle.setText(getString(R.string.currencyTotal_, ""));
             txvExpensesTotal = view.findViewById(R.id.textView_currency_total);
             currencyTotal = Calculate();
             txvCashTotalTitle = view.findViewById(R.id.textView_cash_total_title);
             txvCashTotalTitle.setText(getString(R.string.cashTotal_, ""));
-            txvCashTotal = view.findViewById(R.id.textView_deposit);
+            txvCashTotal = view.findViewById(R.id.textView_cash_total);
             ArrayList<FInvoice> invoices = new ArrayList<>();
             invoices.addAll(realm.where(FInvoice.class).equalTo("myUser.ID", gVar.getMyUser().getID()).findAll());
             cashTotal =0.0;
@@ -66,7 +68,7 @@ public class CurrencyCalculatorFragment extends DialogFragment {
                     Log.d("asdfg", "cash total: "+cashTotal);
                 }
             }
-            cashTotal-=gVar.getMyUser().getTotalExpenses();
+            cashTotal = Double.valueOf(cashTotal.doubleValue() - gVar.getMyUser().getTotalExpenses().doubleValue());
             txvCashTotal.setText(decim.format(cashTotal).replace(",", "."));
             txvDifferenceTitle = view.findViewById(R.id.textView_difference_title);
             txvDifferenceTitle.setText(getString(R.string.difference_, ""));
@@ -475,32 +477,15 @@ public class CurrencyCalculatorFragment extends DialogFragment {
                 }
             });
 
-            edtDeposit = view.findViewById(R.id.editText_deposit);
-            edtDeposit.setText(decim.format(gVar.getMyUser().getDeposit()).replace(",", "."));
-            edtDeposit.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                }
-
-                @Override
-                public void afterTextChanged(final Editable s) {
-                    try {
-                        realm.executeTransaction(new Realm.Transaction() {
-                            @Override
-                            public void execute(Realm realm) {
-                                gVar.getMyUser().setDeposit(Double.parseDouble(String.valueOf(s).equals("")?"0":String.valueOf(s)));
-                            }
-                        });
-                        CheckDifference();
-                    } catch (NumberFormatException e) {
-                        Log.e("asdfg", e.getMessage(), e);
-                    }
+            this.edtDeposit.setFocusable(false);
+            this.edtDeposit.setLongClickable(false);
+            this.edtDeposit.setText(this.decim.format(this.gVar.getMyUser().getMyDebosits().sum("Value").doubleValue()).replace(",", "."));
+            this.edtDeposit.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    FragmentManager manager = CurrencyCalculatorFragment.this.getFragmentManager();
+                    CurrencyCalculatorFragment.this.depositsFragment = new DepositsFragment();
+                    Log.d("asdfg", String.valueOf(CurrencyCalculatorFragment.this.gVar.getMyFInvoice()));
+                    CurrencyCalculatorFragment.this.depositsFragment.show(manager, "Checks Fragment");
                 }
             });
 
@@ -549,23 +534,50 @@ public class CurrencyCalculatorFragment extends DialogFragment {
     }
 
     private Double Calculate(){
-        Double sub500 = (double) 500 * gVar.getMyUser().getCurrency500();
-        Double sub200 = (double) 200 * gVar.getMyUser().getCurrency200();
-        Double sub100 = (double) 100 * gVar.getMyUser().getCurrency100();
-        Double sub50 = (double) 50 * gVar.getMyUser().getCurrency50();
-        Double sub20 = (double) 20 * gVar.getMyUser().getCurrency20();
-        Double sub10 = (double) 10 * gVar.getMyUser().getCurrency10();
-        Double sub5 = (double) 5 * gVar.getMyUser().getCurrency5();
-        Double sub2 = (double) 2 * gVar.getMyUser().getCurrency2();
-        Double sub1 = (double) (gVar.getMyUser().getCurrency1());
-        Double sub050 = 0.50 * gVar.getMyUser().getCurrency050();
-        Double sub020 = 0.20 * gVar.getMyUser().getCurrency020();
-        Double sub010 = 0.10 * gVar.getMyUser().getCurrency010();
-        Double sub005 = 0.05 * gVar.getMyUser().getCurrency005();
-        Double checkValue = gVar.getMyUser().getCCheckValue();
-        Double deposit = gVar.getMyUser().getDeposit();
-        Double total = sub500+sub200+sub100+sub50+sub20+sub10+sub5+sub2+sub1+sub050+sub020+sub010+sub005+checkValue+deposit;
-        return total;
+        double currency500 = (double) this.gVar.getMyUser().getCurrency500();
+        Double.isNaN(currency500);
+        Double sub500 = Double.valueOf(currency500 * 500.0d);
+        double currency200 = (double) this.gVar.getMyUser().getCurrency200();
+        Double.isNaN(currency200);
+        Double sub200 = Double.valueOf(currency200 * 200.0d);
+        double currency100 = (double) this.gVar.getMyUser().getCurrency100();
+        Double.isNaN(currency100);
+        Double sub100 = Double.valueOf(currency100 * 100.0d);
+        double currency50 = (double) this.gVar.getMyUser().getCurrency50();
+        Double.isNaN(currency50);
+        Double sub50 = Double.valueOf(currency50 * 50.0d);
+        double currency20 = (double) this.gVar.getMyUser().getCurrency20();
+        Double.isNaN(currency20);
+        Double sub20 = Double.valueOf(currency20 * 20.0d);
+        double currency10 = (double) this.gVar.getMyUser().getCurrency10();
+        Double.isNaN(currency10);
+        Double sub10 = Double.valueOf(currency10 * 10.0d);
+        double currency5 = (double) this.gVar.getMyUser().getCurrency5();
+        Double.isNaN(currency5);
+        Double sub5 = Double.valueOf(currency5 * 5.0d);
+        double currency2 = (double) this.gVar.getMyUser().getCurrency2();
+        Double.isNaN(currency2);
+        Double sub2 = Double.valueOf(currency2 * 2.0d);
+        Double sub1 = Double.valueOf((double) this.gVar.getMyUser().getCurrency1());
+        double currency050 = (double) this.gVar.getMyUser().getCurrency050();
+        Double.isNaN(currency050);
+        Double sub050 = Double.valueOf(currency050 * 0.5d);
+        double currency020 = (double) this.gVar.getMyUser().getCurrency020();
+        Double.isNaN(currency020);
+        Double sub020 = Double.valueOf(currency020 * 0.2d);
+        double currency010 = (double) this.gVar.getMyUser().getCurrency010();
+        Double.isNaN(currency010);
+        Double sub010 = Double.valueOf(currency010 * 0.1d);
+        double currency005 = (double) this.gVar.getMyUser().getCurrency005();
+        Double.isNaN(currency005);
+        Double sub005 = Double.valueOf(currency005 * 0.05d);
+        Double checkValue = this.gVar.getMyUser().getCCheckValue();
+        Double deposit = Double.valueOf(this.gVar.getMyUser().getMyDebosits().sum("Value").doubleValue());
+        Double sub0052 = sub005;
+        Double sub0102 = sub010;
+        Double sub0202 = sub020;
+        this.edtDeposit.setText(this.decim.format(this.gVar.getMyUser().getMyDebosits().sum("Value").doubleValue()).replace(",", "."));
+        return Double.valueOf(sub500.doubleValue() + sub200.doubleValue() + sub100.doubleValue() + sub50.doubleValue() + sub20.doubleValue() + sub10.doubleValue() + sub5.doubleValue() + sub2.doubleValue() + sub1.doubleValue() + sub050.doubleValue() + sub0202.doubleValue() + sub0102.doubleValue() + sub0052.doubleValue() + checkValue.doubleValue() + deposit.doubleValue());
     }
 
     public void CheckDifference(){

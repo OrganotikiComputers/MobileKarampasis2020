@@ -72,7 +72,7 @@ public class RecentPurchasesFragment extends DialogFragment {
                                     realm.executeTransaction(new Realm.Transaction() {
                                         @Override
                                         public void execute(Realm realm) {
-                                            realm.copyToRealmOrUpdate(new InvoiceLine(line.getID(), line.getMyInvoice(), line.getMyItem(), line.getWPrice(), line.getPrice(), line.getQuantity(), line.getNotes(), line.getLastDate(), line.getLastCompany(), line.getLastQuantity(), line.getWrhID(), line.getBraID(), line.getTypeCode(), line.getDosCode(), line.getDocNumber(), line.getOverdue(), line.isEY(), line.isGuarantee(), line.isFromCustomer(), line.getTRNID(), line.getManufacturer(), line.getModel(), line.getYear1(), line.getEngineCode(), line.getYear2(),line.getKMTraveled(), line.getReturnCause(), line.getObservations(),line.getDocID(),line.getDocValue(),line.getChargePapi(), line.isExtraCharge(),line.getExtraChargeValue(), line.getExtraChargeLimit() ));
+                                            realm.copyToRealmOrUpdate(new InvoiceLine(line.getID(), line.getMyInvoice(), line.getMyItem(), line.getWPrice(), line.getPrice(), line.getQuantity(), line.getNotes(), line.getLastDate(), line.getLastCompany(), line.getLastQuantity(), line.getWrhID(), line.getBraID(), line.getTypeCode(), line.getDosCode(), line.getDocNumber(), line.getOverdue(), line.isEY(), line.isGuarantee(), line.isFromCustomer(), line.getTRNID(), line.getManufacturer(), line.getModel(), line.getYear1(), line.getEngineCode(), line.getYear2(),line.getKMTraveled(), line.getReturnCause(), line.getObservations(),line.getDocID(),line.getDocValue(),line.getChargePapi(), line.isExtraCharge(),line.getExtraChargeValue(), line.getExtraChargeLimit(),line.getDiscountReturnPercent(),line.isAllowed(),line.getMessageAllowed()));
                                         }
                                     });
                                 } else {
@@ -124,7 +124,16 @@ public class RecentPurchasesFragment extends DialogFragment {
                     JSONObject o = (JSONObject) array.get(i);
                     Log.d("asdfg", String.valueOf(o));
                     if (!checkIfExists(o.getString("LastCompany"),o.getString("DosCode"), o.getString("DocNumber"), o.getDouble("Price"),o.getString("TRNID"))) {
-                        InvoiceLineSimple lineSimple = new InvoiceLineSimple(String.valueOf(UUID.randomUUID()), gVar.getMyInvoice(), oldLines.get(0).getMyItem(), o.getDouble("WPrice"), o.getDouble("Price"), 0.0, "", o.getString("LastDate"), realm.where(Company.class).equalTo("InAppID", o.getString("LastCompany")).findFirst(), o.getDouble("LastQuantity"), o.getString("WrhID"), o.getString("BraID"), o.getString("TypeCode"), o.getString("DosCode"), o.getString("DocNumber"), o.getInt("Overdue"), o.getBoolean("isEY"), false, false, o.getString("TRNID"), "", "", null, "", null, null , "", "",o.getString("DocID"), o.getDouble("DocValue"),o.getDouble("ChargePapi"),o.getBoolean("IsExtraCharge"),o.getDouble("ExtraChargeValue"),o.getDouble("ExtraChargeLimit"));
+                        InvoiceLineSimple lineSimple = new InvoiceLineSimple(String.valueOf(UUID.randomUUID()), gVar.getMyInvoice(), oldLines.get(0).getMyItem(), o.getDouble("WPrice"), o.getDouble("Price"), 0.0, "", o.getString("LastDate"), realm.where(Company.class).equalTo("InAppID", o.getString("LastCompany")).findFirst(), o.getDouble("LastQuantity"), o.getString("WrhID"), o.getString("BraID"), o.getString("TypeCode"), o.getString("DosCode"), o.getString("DocNumber"), o.getInt("Overdue"), o.getBoolean("isEY"), false, false, o.getString("TRNID"), "", "", null, "", null, null , "", "",o.getString("DocID"), o.getDouble("DocValue"),o.getDouble("ChargePapi"),o.getBoolean("IsExtraCharge"),o.getDouble("ExtraChargeValue"),o.getDouble("ExtraChargeLimit"),o.getDouble("DiscountReturnPercent"),false,o.getString("ReturnAllowed"));
+                        String allowed=lineSimple.getMessageAllowed();
+                        String[] separated = allowed.split("#");
+                        if(separated[0].equals("0")){
+                            lineSimple.setAllowed(false);
+                        }
+                        else{
+                            lineSimple.setAllowed(true);
+                        }
+                        lineSimple.setMessageAllowed(separated[1]);
                         lines.add(lineSimple);
                     }
                 }
