@@ -75,6 +75,7 @@ public class CustomerReport extends AppCompatActivity implements Communicator {
             if (b != null) {
                 this.customer = (Customer) this.realm.where(Customer.class).equalTo("ID", b.getString("CustomerID")).findFirst();
                 this.address = (Address) this.realm.where(Address.class).equalTo("ID", b.getString("AddressID")).findFirst();
+                request.getCustomerBalance(CustomerReport.this, this.customer);
             }
             if (savedInstanceState != null) {
                 customer = realm.where(Customer.class).equalTo("ID", savedInstanceState.getString("CustomerID")).findFirst();
@@ -416,6 +417,16 @@ public class CustomerReport extends AppCompatActivity implements Communicator {
                             }
                         });
 
+                    }
+                } catch (Exception e) {
+                    Log.e("asdfg", e.getMessage(), e);
+                }
+                break;
+            case 4:
+                try {
+                    Log.d("asdfg", String.valueOf(jsonObject));
+                    if (jsonObject.length() != 0 || jsonObject.getBoolean("SetServiceLevelResult")) {
+                        SetCustomerService();
                     }
                 } catch (Exception e) {
                     Log.e("asdfg", e.getMessage(), e);
